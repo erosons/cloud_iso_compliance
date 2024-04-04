@@ -3,9 +3,13 @@ Refined Topic : Automated API framework tools that check cloud  resources (s3,KM
 
 The automated API framework for checking compliance of cloud resources with ISO 27001, incorporating into Amazon S3, AWS Key Management Service (KMS), and AWS Identity and Access Management (IAM) to offers a comprehensive approach towards ensuring information security management across critical AWS services. This framework aims to automate the evaluation of security configurations against ISO 27001 standards, focusing on data encryption, access control, and audit trails within these services.
 
-### FOCUS ISO 27001 Controls for S3, KMS, and IAM
+##### FOCUS ISO 27001 Controls for S3, KMS, and IAM
 
 ```  Write about specific controls within the standard ``` 
+
+* Data Encryption: For S3 and KMS, ensuring that data at rest and in transit are encrypted using strong encryption methods.
+* Access Control: For IAM, managing who has access to what resources, ensuring least privilege access and secure authentication methods.
+* Audit Trails and Monitoring: Implementing logging for access and actions on resources to detect and respond to security incidents promptly.
 
 The ISO 27001 standard provides a comprehensive set of information security controls that can be tailored to an organization's specific needs. When considering AWS services like S3, KMS, and IAM, it's essential to map these services to the relevant ISO 27001 controls to ensure that the organization's use of AWS is compliant with the standard. Below is an overview of how these AWS services map to specific ISO 27001 controls:
 
@@ -64,14 +68,7 @@ Moreover, compliance with ISO 27001 can offer competitive advantages, facilitate
 In summary, the controls related to S3, KMS, and IAM are integral to the architecture of an organization’s ISMS. They ensure the confidentiality, integrity, and availability of data, which are the fundamental objectives of information security. Adhering to these controls in line with ISO 27001 standards solidifies an organization’s security posture and compliance status, safeguarding its information assets against emerging threats and vulnerabilities in the digital landscape.
 
 
-```ISO 27001 Controls for S3, KMS, and IAM```
-
-* Data Encryption: For S3 and KMS, ensuring that data at rest and in transit are encrypted using strong encryption methods.
-* Access Control: For IAM, managing who has access to what resources, ensuring least privilege access and secure authentication methods.
-* Audit Trails and Monitoring: Implementing logging for access and actions on resources to detect and respond to security incidents promptly.
-
-
-```Framework Design Considerations```
+##### Framework Design Consideration
 
 The framework should consist of modular components for each AWS service, designed to perform specific compliance checks and generate reports. Here's an outline for structuring this framework:
 * 		API Endpoints: Design RESTful API endpoints that trigger compliance assessments across S3, KMS, and IAM resources.
