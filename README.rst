@@ -3,9 +3,9 @@ Refined Topic : Automated API framework tools that check cloud  resources (s3,KM
 
 The automated API framework for checking compliance of cloud resources with ISO 27001, incorporating into Amazon S3, AWS Key Management Service (KMS), and AWS Identity and Access Management (IAM) to offers a comprehensive approach towards ensuring information security management across critical AWS services. This framework aims to automate the evaluation of security configurations against ISO 27001 standards, focusing on data encryption, access control, and audit trails within these services.
 
-<strong> FOCUS ISO 27001 Controls for S3, KMS, and IAM <strong>
+### FOCUS ISO 27001 Controls for S3, KMS, and IAM <strong>
 
-``` <strong> Write about specific controls within the standard <\strong>``` 
+```  Write about specific controls within the standard ``` 
 
 The ISO 27001 standard provides a comprehensive set of information security controls that can be tailored to an organization's specific needs. When considering AWS services like S3, KMS, and IAM, it's essential to map these services to the relevant ISO 27001 controls to ensure that the organization's use of AWS is compliant with the standard. Below is an overview of how these AWS services map to specific ISO 27001 controls:
 
