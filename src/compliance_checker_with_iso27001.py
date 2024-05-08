@@ -1,3 +1,4 @@
+    
 from dataclasses import dataclass, field
 from sklearn.preprocessing import LabelEncoder
 from typing import Dict, Optional
@@ -38,84 +39,96 @@ class ComplianceAI:
         #================================================================
          # Model Training based on ISO27001 data 
         #================================================================
-        training_data_df = self.training_data
-        training_data_df.columns = range(training_data_df.shape[1])
+        try:
+            # Load training data
+            training_data_df = self.training_data
+            #print(len(training_data_df.columns))
+            training_data_df.columns = range(training_data_df.shape[1])
+            print(training_data_df)
+            # Split data into training and testing sets
+            train, test = train_test_split(training_data_df, test_size=0.3)
+            x_train = train.iloc[:, 2:-1]
+            y_train = train.iloc[:, -1]
 
-        # Split data into training and testing sets
-        train, test = train_test_split(training_data_df, test_size=0.3)
-        x_train = train.iloc[:, 2:-1]
-        y_train = train.iloc[:, -1]
+            x_test = test.iloc[:, 2:-1]
+            y_test = test.iloc[:, -1]
 
-        x_test = test.iloc[:, 2:-1]
-        y_test = test.iloc[:, -1]
+            # Define all possible label values (should include all classes)
+            all_labels = [0, 50, 100]
 
-        # Define all possible label values (should include all classes)
-        all_labels = [0, 50, 100]
+            # Map numeric labels to class names using LabelEncoder
+            class_names = {0: "Non-Compliant", 50: "Partially Compliant", 100: "Compliant"}
+            encoder = LabelEncoder()
+            encoder.fit(all_labels)
 
-        # Map numeric labels to class names using LabelEncoder
-        class_names = {0: "Non-Compliant", 50: "Partially Compliant", 100: "Compliant"}
-        encoder = LabelEncoder()
-        encoder.fit(all_labels)
+            # Encode training and testing labels
+            y_train_encoded = encoder.transform(y_train)
+            y_test_encoded = encoder.transform(y_test)
 
-        # Encode training and testing labels
-        y_train_encoded = encoder.transform(y_train)
-        y_test_encoded = encoder.transform(y_test)
+            # Train the Decision Tree classifier with encoded labels
+            clf = DecisionTreeClassifier()
+            clf.fit(x_train, y_train_encoded)
 
-        # Train the Decision Tree classifier with encoded labels
-        clf = DecisionTreeClassifier()
-        clf.fit(x_train, y_train_encoded)
+            # Predict on the test data
+            y_pred = clf.predict(x_test)
 
-        # Predict on the test data
-        y_pred = clf.predict(x_test)
+            # Decode predictions back to original numeric labels
+            y_pred_numeric = encoder.inverse_transform(y_pred)
 
-        # Decode predictions back to original numeric labels
-        y_pred_numeric = encoder.inverse_transform(y_pred)
+            # Translate numeric predictions to target names using the custom mapping
+            y_pred_names = [class_names[label] for label in y_pred_numeric]
+            logger.info(f"Predicted names: {y_pred_names}")
+            print(f"Predicted names: {y_pred_names}")
 
-        # Translate numeric predictions to target names using the custom mapping
-        y_pred_names = [class_names[label] for label in y_pred_numeric]
-        logger.info(f"Predicted names: {y_pred_names}")
-        print(f"Predicted names: {y_pred_names}")
+            # Map the actual numeric labels to target names
+            y_actual_names = [class_names[label] for label in y_test]
 
+            # Provide the expected target names for the classification report
+            target_names = list(class_names.values())
 
-        # Map the actual numeric labels to target names
-        y_actual_names = [class_names[label] for label in y_test]
+            # Evaluate using the classification report
+            report = classification_report(y_actual_names, y_pred_names, target_names=target_names)
 
-        # Provide the expected target names for the classification report
-        target_names = list(class_names.values())
+            # Calculate accuracy based on numeric labels
+            accuracy = accuracy_score(y_test_encoded, y_pred)
+            print(f"Accuracy: {accuracy * 100}%")
 
-        # Evaluate using the classification report
-        report = classification_report(y_actual_names, y_pred_names, target_names=target_names)
-
-        # Calculate accuracy based on numeric labels
-        accuracy = accuracy_score(y_test_encoded, y_pred)
-        print(f"Accuracy: {accuracy * 100}%")
-
-        # Save the report to a file
-        with open(f'training_prediction_{reportname}.csv', 'w') as f:
-            f.write(report)
-
-        #================================================================
-         # Predict on the new data extracted from AWS
-        #================================================================
-
-        new_df = pd.DataFrame(self.compliance_container,index=[0])
-        print(new_df)
-
-    
-        y_pred_new = clf.predict(new_df)
-        print(y_pred_new)
-        #new_report = classification_report(y_pred_new, target_names=target_names)
-        with open(f'{reportname}_prediction_{y_pred_new}.csv', 'w') as f:
-              f.write(report)
-        # return logger.info(f"Compliance report generated for {reportname}")
-    
+            # Save the report to a file
+            with open(f'training_prediction_{reportname}.csv', 'w') as f:
+                f.write(report)
+            
+            #================================================================
+            # Predict on the new data extracted from AWS
+            #================================================================
 
 
+            # Predict on new data
+            if self.compliance_container:
+                new_df = pd.DataFrame(self.compliance_container, index=[0])
+                print(new_df)
+                new_df.columns = range(new_df.shape[1])
+                print("New DataFrame:", new_df)
+
+                # Ensure the new data has the same features
+                missing_features = set(x_train.columns) - set(new_df.columns)
+                if missing_features:
+                    (f"Missing features: {missing_features}")
+
+                y_pred_new = clf.predict(new_df)
+                print("New Prediction:", y_pred_new)
+                with open(f'{reportname}_prediction_{y_pred_new[0]}.csv', 'w') as f:
+                    f.write(report)
+            else:
+                logger.warning("No compliance data provided in the container.")
+
+        except Exception as e:
+            logger.error(f"Error generating compliance report: {e}")
 
 
 # Print IAM  the classification report
 container={}
 iam_report = ComplianceManager().check_iam_compliance(container)
+print(iam_report)
 compliance = ComplianceAI(iam_report)
 compliance.compliance_report_generator('iam_report')
 
