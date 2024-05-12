@@ -1,4 +1,3 @@
-    
 from dataclasses import dataclass, field
 from sklearn.preprocessing import LabelEncoder
 from typing import Dict, Optional
